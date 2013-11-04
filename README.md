@@ -70,7 +70,7 @@ The following classes are available on your bullet elements.
    </tr>
 </table>
 
-### Data Atrributes
+### Data Attributes
 
 The default behaviour, when the option value is `true`, is to look for elements with `data-bespoke-bullet` attributes:
 
