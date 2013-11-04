@@ -95,6 +95,19 @@ bespoke.horizontal.from('article', {
 </article>
 ```
 
+## Advanced bullet selectors
+
+Modifying the bullet selector can be quite powerful, as in this example:
+
+- Make `li` elements bullets, but exclude lists from being bulleted by adding the `no-bullets` class to the `ul`/`ol` tags.
+- Make arbitrary elements, like `h2`/`p`/`code`, bullets with the class `bullet`. Because the first bespoke-bullets item on each slide is shown automatically, you might want to add `bullet` to an arbitrary element before your first bullet-like element.
+
+```js
+bespoke.horizontal.from('article', {
+  bullets: 'ul:not(.no-bullets) li, ol:not(.no-bullets) li, .bullet'
+});
+```
+
 ## Questions?
 
 Contact me on GitHub or Twitter: [@markdalgleish](http://twitter.com/markdalgleish)
