@@ -1,7 +1,7 @@
 /*!
  * bespoke-bullets v1.1.0
  *
- * Copyright 2014, Mark Dalgleish
+ * Copyright 2015, Mark Dalgleish
  * This content is released under the MIT license
  * http://mit-license.org/markdalgleish
  */
@@ -16,12 +16,16 @@ module.exports = function(options) {
         return [].slice.call(slide.querySelectorAll((typeof options === 'string' ? options : '[data-bespoke-bullet]')), 0);
       }),
 
+      isBulletingOff = function() {
+        return deck.parent.classList.contains('bespoke-bullet-off');
+      },
+
       next = function() {
         var nextSlideIndex = activeSlideIndex + 1;
 
         if (activeSlideHasBulletByOffset(1)) {
           activateBullet(activeSlideIndex, activeBulletIndex + 1);
-          return false;
+          return isBulletingOff() && activateRemainingBullets(+1);
         } else if (bullets[nextSlideIndex]) {
           activateBullet(nextSlideIndex, 0);
         }
@@ -32,7 +36,7 @@ module.exports = function(options) {
 
         if (activeSlideHasBulletByOffset(-1)) {
           activateBullet(activeSlideIndex, activeBulletIndex - 1);
-          return false;
+          return isBulletingOff() && activateRemainingBullets(-1);
         } else if (bullets[prevSlideIndex]) {
           activateBullet(prevSlideIndex, bullets[prevSlideIndex].length - 1);
         }
@@ -61,6 +65,19 @@ module.exports = function(options) {
             }
           });
         });
+      },
+
+      activateRemainingBullets = function(offset) {
+        var currentBullets = bullets[activeSlideIndex],
+          nextSlideIndex = activeSlideIndex + offset;
+        for (var i = activeBulletIndex + 1; i < currentBullets.length; i++) {
+          activateBullet(activeSlideIndex, i);
+        }
+
+        if (nextSlideIndex >= 0 && nextSlideIndex <= deck.slides.length - 1) {
+          activateBullet(nextSlideIndex, 0);
+        }
+        return true;
       },
 
       activeSlideHasBulletByOffset = function(offset) {
