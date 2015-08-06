@@ -245,6 +245,26 @@ describe("bespoke-bullet", function() {
 
         });
 
+        describe("given the deck parent element has the 'bespoke-bullet-off' class", function() {
+
+          describe("when the next bullet is requested while still having inactive bullets on the slide", function() {
+
+            beforeEach(function() {
+              deck.parent.classList.add("bespoke-bullet-off");
+              deck.next();
+            });
+
+            it("should move to the next slide instead of showing the next bullet", function() {
+              expect(deck.slide()).toBe(1);
+            });
+
+            it("should activate the remaining bullets of the current slide", function() {
+              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBe(true);
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBe(true);
+            });
+          });
+        });
+
       });
 
       describe("given a deck with bullets on every slide except the second slide", function() {
