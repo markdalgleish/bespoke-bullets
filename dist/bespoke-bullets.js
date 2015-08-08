@@ -1,7 +1,7 @@
 /*!
  * bespoke-bullets v1.1.0
  *
- * Copyright 2014, Mark Dalgleish
+ * Copyright 2015, Mark Dalgleish
  * This content is released under the MIT license
  * http://mit-license.org/markdalgleish
  */
@@ -11,6 +11,7 @@ module.exports = function(options) {
   return function(deck) {
     var activeSlideIndex,
       activeBulletIndex,
+      isBullettingDisabled = false,
 
       bullets = deck.slides.map(function(slide) {
         return [].slice.call(slide.querySelectorAll((typeof options === 'string' ? options : '[data-bespoke-bullet]')), 0);
@@ -21,7 +22,7 @@ module.exports = function(options) {
 
         if (activeSlideHasBulletByOffset(1)) {
           activateBullet(activeSlideIndex, activeBulletIndex + 1);
-          return false;
+          return isBullettingDisabled && activateRemainingBullets(+1);
         } else if (bullets[nextSlideIndex]) {
           activateBullet(nextSlideIndex, 0);
         }
@@ -32,7 +33,7 @@ module.exports = function(options) {
 
         if (activeSlideHasBulletByOffset(-1)) {
           activateBullet(activeSlideIndex, activeBulletIndex - 1);
-          return false;
+          return isBullettingDisabled && activateRemainingBullets(-1);
         } else if (bullets[prevSlideIndex]) {
           activateBullet(prevSlideIndex, bullets[prevSlideIndex].length - 1);
         }
@@ -63,6 +64,15 @@ module.exports = function(options) {
         });
       },
 
+      activateRemainingBullets = function(offset) {
+        var nextSlideIndex = activeSlideIndex + offset;
+        activateBullet(activeSlideIndex, bullets[activeSlideIndex].length - 1);
+        if (nextSlideIndex >= 0 && nextSlideIndex <= deck.slides.length - 1) {
+          activateBullet(nextSlideIndex, offset > 0 ? 0 : bullets[nextSlideIndex].length - 1);
+        }
+        return true;
+      },
+
       activeSlideHasBulletByOffset = function(offset) {
         return bullets[activeSlideIndex][activeBulletIndex + offset] !== undefined;
       };
@@ -72,6 +82,13 @@ module.exports = function(options) {
 
     deck.on('slide', function(e) {
       activateBullet(e.index, 0);
+    });
+
+    deck.on('bullets.enable', function() {
+      isBullettingDisabled = false;
+    });
+    deck.on('bullets.disable', function() {
+      isBullettingDisabled = true;
     });
 
     activateBullet(0, 0);
