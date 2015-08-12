@@ -250,14 +250,21 @@ describe("bespoke-bullet", function() {
             deck.fire('bullets.disable');
           });
 
-          xdescribe("when a bullets.disable event is received", function() {
+          describe("when a bullets.disable event is received", function() {
             it("should not enable bulletting", function() {
+              deck.fire('bullets.disable');
+              deck.next();
 
+              expect(deck.slide()).toBe(1);
             });
           });
-          xdescribe("when a bullets.enable event is received", function() {
+          describe("when a bullets.enable event is received", function() {
             it("should enable bulletting", function() {
+              deck.fire('bullets.enable');
+              deck.next();
 
+              expect(deck.slide()).toBe(0);
+              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBe(true);
             });
           });
 
