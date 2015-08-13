@@ -245,8 +245,22 @@ describe("bespoke-bullet", function() {
 
         });
 
+        describe("given bulletting is enabled", function() {
+          describe("when a bullets.disable event is received", function() {
+            beforeEach(function() {
+              deck.fire('bullets.disable');
+            });
+
+            it("should activate all bullets on the active slide", function() {
+              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBe(true);
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBe(true);
+            });
+          });
+        });
+
         describe("given bulletting is disabled", function() {
           beforeEach(function() {
+            deck.slide(0);
             deck.fire('bullets.disable');
           });
 
@@ -261,10 +275,10 @@ describe("bespoke-bullet", function() {
           describe("when a bullets.enable event is received", function() {
             it("should enable bulletting", function() {
               deck.fire('bullets.enable');
-              deck.next();
+              deck.prev();
 
               expect(deck.slide()).toBe(0);
-              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBe(true);
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBe(false);
             });
           });
 
