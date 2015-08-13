@@ -245,6 +245,72 @@ describe("bespoke-bullet", function() {
 
         });
 
+        describe("given bulletting is enabled", function() {
+          describe("when a bullets.disable event is received", function() {
+            beforeEach(function() {
+              deck.fire('bullets.disable');
+            });
+
+            it("should activate all bullets on the active slide", function() {
+              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBe(true);
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBe(true);
+            });
+          });
+        });
+
+        describe("given bulletting is disabled", function() {
+          beforeEach(function() {
+            deck.slide(0);
+            deck.fire('bullets.disable');
+          });
+
+          describe("when a bullets.disable event is received", function() {
+            it("should not enable bulletting", function() {
+              deck.fire('bullets.disable');
+              deck.next();
+
+              expect(deck.slide()).toBe(1);
+            });
+          });
+          describe("when a bullets.enable event is received", function() {
+            it("should enable bulletting", function() {
+              deck.fire('bullets.enable');
+              deck.prev();
+
+              expect(deck.slide()).toBe(0);
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBe(false);
+            });
+          });
+
+          describe("when 'deck.next' is issued", function() {
+            beforeEach(function() {
+              deck.next();
+            });
+
+            it("should activate the remaining bullets on the slide", function() {
+              expect(getBullet(deck, 0, 1).classList.contains('bespoke-bullet-active')).toBeTruthy();
+              expect(getBullet(deck, 0, 2).classList.contains('bespoke-bullet-active')).toBeTruthy();
+            });
+
+            it("should change to the next slide", function() {
+              expect(deck.slide()).toBe(1);
+            });
+          });
+
+          describe("when 'deck.prev' is issued", function() {
+            beforeEach(function() {
+              deck.slide(2);
+              deck.prev();
+            });
+
+            it("should change to the previous slide", function() {
+              deck.prev();
+              expect(deck.slide()).toBe(0);
+            });
+          });
+
+        });
+
       });
 
       describe("given a deck with bullets on every slide except the second slide", function() {

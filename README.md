@@ -84,6 +84,21 @@ bespoke.from('article', [
 </article>
 ```
 
+### Events
+
+The functionality provided by the plugin can be deactivated and reactivated using bespoke.js events, for example:
+
+```js
+deck.fire('bullets.disable');
+```
+
+That makes navigating on the presentation work as if the plugin had not been loaded. To activate it again:
+
+```js
+deck.fire('bullets.enable');
+```
+
+
 ## Package managers
 
 ### npm

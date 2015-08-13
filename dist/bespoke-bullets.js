@@ -1,7 +1,7 @@
 /*!
  * bespoke-bullets v1.1.0
  *
- * Copyright 2014, Mark Dalgleish
+ * Copyright 2015, Mark Dalgleish
  * This content is released under the MIT license
  * http://mit-license.org/markdalgleish
  */
@@ -11,30 +11,35 @@ module.exports = function(options) {
   return function(deck) {
     var activeSlideIndex,
       activeBulletIndex,
+      isBullettingDisabled = false,
 
       bullets = deck.slides.map(function(slide) {
         return [].slice.call(slide.querySelectorAll((typeof options === 'string' ? options : '[data-bespoke-bullet]')), 0);
       }),
 
       next = function() {
-        var nextSlideIndex = activeSlideIndex + 1;
+        var nextSlideIndex = activeSlideIndex + 1,
+          activeSlideHasNextBullet = activeSlideHasBulletByOffset(1),
+          bulletToActivate;
 
-        if (activeSlideHasBulletByOffset(1)) {
-          activateBullet(activeSlideIndex, activeBulletIndex + 1);
+        if ((isBullettingDisabled || !activeSlideHasNextBullet) && bullets[nextSlideIndex]) {
+          bulletToActivate = isBullettingDisabled ? bullets[nextSlideIndex].length - 1 : 0;
+          activateBullet(nextSlideIndex, bulletToActivate);
+        } else if (!isBullettingDisabled && activeSlideHasNextBullet) {
+          activateBullet(activeSlideIndex, activeBulletIndex+1);
           return false;
-        } else if (bullets[nextSlideIndex]) {
-          activateBullet(nextSlideIndex, 0);
         }
       },
 
       prev = function() {
-        var prevSlideIndex = activeSlideIndex - 1;
+        var prevSlideIndex = activeSlideIndex - 1,
+          activeSlideHasPreviousBullet = activeSlideHasBulletByOffset(-1);
 
-        if (activeSlideHasBulletByOffset(-1)) {
+        if ((isBullettingDisabled || !activeSlideHasPreviousBullet) && bullets[prevSlideIndex]) {
+          activateBullet(prevSlideIndex, bullets[prevSlideIndex].length - 1);
+        } else if (!isBullettingDisabled  && activeSlideHasPreviousBullet) {
           activateBullet(activeSlideIndex, activeBulletIndex - 1);
           return false;
-        } else if (bullets[prevSlideIndex]) {
-          activateBullet(prevSlideIndex, bullets[prevSlideIndex].length - 1);
         }
       },
 
@@ -42,8 +47,8 @@ module.exports = function(options) {
         activeSlideIndex = slideIndex;
         activeBulletIndex = bulletIndex;
 
-        bullets.forEach(function(slide, s) {
-          slide.forEach(function(bullet, b) {
+        bullets.forEach(function (slide, s) {
+          slide.forEach(function (bullet, b) {
             bullet.classList.add('bespoke-bullet');
 
             if (s < slideIndex || s === slideIndex && b <= bulletIndex) {
@@ -72,6 +77,14 @@ module.exports = function(options) {
 
     deck.on('slide', function(e) {
       activateBullet(e.index, 0);
+    });
+
+    deck.on('bullets.enable', function() {
+      isBullettingDisabled = false;
+    });
+    deck.on('bullets.disable', function() {
+      isBullettingDisabled = true;
+      activateBullet(deck.slide(), bullets[deck.slide()].length - 1);
     });
 
     activateBullet(0, 0);
